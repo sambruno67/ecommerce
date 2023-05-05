@@ -1,0 +1,104 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <ul class="list-group" id="item-list">
+          <h3 class="text-center text-info">La liste des produits de votre panier</h3>
+            
+            
+          </ul>
+    </div>
+</div>
+<row>
+  <div class="col-md-12">
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" id="items" name="items">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputEmail4">Nom</label>
+          <input type="text" class="form-control" id="nom" name="nom" placeholder="Nom">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" id="email" name="email" placeholder="exemple@gmail.com">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputAddress">Adresse</label>
+        <input type="text" class="form-control" id="adresse" name="adresse" placeholder="1234 Main St">
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputCity">Ville</label>
+          <input type="text" class="form-control" id="ville" name="ville">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="inputState">Pays</label>
+          <select name="pays" id="pays" class="form-control">
+            <option selected>Burkina Faso</option>
+            <option>Cameroun</option>
+            <option>Cote d'Ivoire</option>
+            <option>Guinee</option>
+            <option>Mali</option>
+            <option>Togo</option>
+          </select>
+        </div>
+        <div class="form-group col-md-2">
+          <label for="inputZip">Zip</label>
+          <input name = "zipcode" id="zipcode" type="text" class="form-control" >
+        </div>
+      </div>
+      <div class="form-group col-md-3">
+        <label for="inputZip">Somme totale a payer</label>
+        <input name = "total" id="total" type="readonly" class=" bg-dark text-warning form-control" >
+      </div>
+    
+      <button type="submit" class="btn btn-primary">Commander</button>
+    </form>
+  </div>
+</row>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    if(localStorage.getItem('panier') == null){
+        var panier = {};
+    }else{
+      panier = JSON.parse(localStorage.getItem('panier'));
+    }
+    var nombre = 0;
+    var total = 0;
+    for(item in panier){
+      let nom = panier[item][1];
+      let quantite = panier[item][0];
+      let prix = panier[item][2];
+      nombre += quantite;
+      total += prix;
+      let itemString = `<li class="list-group-item d-flex justify-content-between align-items-center">
+              ${nom}
+              
+              <span class="badge badge-primary badge-pill">Quantite: ${quantite}</span>
+              <span class="badge badge-warning badge-pill">Prix: $ ${prix}</span>
+            </li>`;
+            $("#item-list").append(itemString);
+    }
+
+    let itemNombre = `<li class="list-group-item d-flex justify-content-between align-items-center">
+             
+              <b class="bg-danger text-white badge-pill">QUANTITE ET PRIX TOTAL</b>
+              <span class="badge badge-danger badge-pill">TQTE: ${nombre}</span>
+              <span class="badge badge-danger badge-pill">TPRIX: $ ${total}</span>
+            </li>`;
+            $("#item-list").append(itemNombre); 
+            $("#total").val("$"+total);   
+
+    
+    $("#items").val(JSON.stringify(panier));
+
+</script>
+
+{% endblock %}
